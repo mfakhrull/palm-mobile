@@ -18,6 +18,7 @@ import * as FileSystem from 'expo-file-system';
 import { initPalmDetection, detectPalmFruit } from '../../utils/palmDetection';
 import { StatusBar } from 'expo-status-bar';
 import { LABELS } from '../../utils/tensorflow';
+import { generatePalmAnalysisPDF } from '../../utils/pdfService';
 
 export default function ScanScreen() {
   const router = useRouter();
@@ -190,6 +191,27 @@ export default function ScanScreen() {
   // Function to navigate to real-time scan
   const goToRealTimeScan = () => {
     router.push('/real-time-scan');
+  };
+
+  // Function to generate and download PDF report
+  const generateReport = async () => {
+    try {
+      if (!results || !image) {
+        Alert.alert('Error', 'Analysis results or image not found.');
+        return;
+      }
+      
+      const success = await generatePalmAnalysisPDF(results, image, detections);
+      
+      if (success) {
+        Alert.alert('Success', 'PDF report generated successfully.');
+      } else {
+        Alert.alert('Error', 'Failed to generate PDF report.');
+      }
+    } catch (error) {
+      console.error('Error generating report:', error);
+      Alert.alert('Error', 'An error occurred while generating the PDF report.');
+    }
   };
 
   // Get color for a specific class
@@ -413,6 +435,15 @@ export default function ScanScreen() {
                   ? 'This appears to be an empty fruit bunch.'
                   : 'Assessment unclear. Please try another image.'}
               </Text>
+              
+              {/* PDF Download Button */}
+              <TouchableOpacity 
+                style={styles.pdfButton}
+                onPress={() => generateReport()}
+              >
+                <Ionicons name="document-text" size={20} color="white" />
+                <Text style={styles.pdfButtonText}>Download PDF Report</Text>
+              </TouchableOpacity>
             </View>
             
             {detections.length > 1 && (
@@ -690,6 +721,22 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#666',
     lineHeight: 20,
+  },
+  pdfButton: {
+    flexDirection: 'row',
+    backgroundColor: '#4a6fa5',
+    paddingHorizontal: 15,
+    paddingVertical: 10,
+    borderRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 20,
+    gap: 8,
+  },
+  pdfButtonText: {
+    color: 'white',
+    fontWeight: '600',
+    fontSize: 14,
   },
   additionalDetections: {
     marginTop: 15,
