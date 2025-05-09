@@ -28,9 +28,33 @@ export const generatePalmAnalysisPDF = async (results, imageUri, detections) => 
         <td>${detection.class}</td>
         <td>${(detection.confidence * 100).toFixed(1)}%</td>
       </tr>
-    `).join('');
+    `).join('');    // Build HTML overlays for bounding boxes over the image
+    const boxColors = {
+      1: '#6c757d', // Empty Bunch
+      2: '#ffc107', // Underripe
+      3: '#dc3545', // Abnormal
+      4: '#28a745', // Ripe
+      5: '#17a2b8', // Unripe
+      6: '#fd7e14'  // Overripe
+    };
     
-    // Create HTML content for the PDF
+    const overlayDivs = detections.map(d => {
+      const { normalized } = d.boundingBox;
+      const left = (normalized.xmin * 100).toFixed(2);
+      const top = (normalized.ymin * 100).toFixed(2);
+      const width = ((normalized.xmax - normalized.xmin) * 100).toFixed(2);
+      const height = ((normalized.ymax - normalized.ymin) * 100).toFixed(2);
+      // Get the correct color from the classId
+      const color = boxColors[d.classId] || '#6c757d';
+      return `
+      <div style="position:absolute; left:${left}%; top:${top}%; width:${width}%; height:${height}%; border:2px solid ${color}; box-sizing:border-box;"></div>
+      <div style="position:absolute; left:${left}%; top:${Math.max(0, parseFloat(top) - 5)}%; background-color:${color} !important; color:white; font-size:10px; padding:2px 4px; border-radius:2px; font-weight:bold; border:1px solid ${color}; z-index:999;">
+        ${d.class}: ${Math.round(d.confidence * 100)}%
+      </div>
+      `;
+    }).join('');
+    
+    // Create HTML content for the PDF with overlay boxes
     const htmlContent = `
       <!DOCTYPE html>
       <html>
@@ -59,11 +83,17 @@ export const generatePalmAnalysisPDF = async (results, imageUri, detections) => 
             .image-container {
               text-align: center;
               margin-bottom: 30px;
+              position: relative;
+              display: flex;
+              justify-content: center;
+              align-items: center;
             }
             .analysis-image {
               max-width: 100%;
               max-height: 300px;
               border-radius: 8px;
+              display: block;
+              margin: 0 auto;
             }
             .results-section {
               margin-bottom: 30px;
@@ -120,9 +150,11 @@ export const generatePalmAnalysisPDF = async (results, imageUri, detections) => 
             <div class="title">Palm Fruit Analysis Report</div>
             <div class="date">Generated on: ${reportDate}</div>
           </div>
-          
-          <div class="image-container">
-            <img class="analysis-image" src="data:image/jpeg;base64,${base64Image}" />
+            <div class="image-container">
+            <div style="position:relative; display:inline-block;">
+              <img class="analysis-image" src="data:image/jpeg;base64,${base64Image}" />
+              ${overlayDivs}
+            </div>
           </div>
           
           <div class="results-section">
