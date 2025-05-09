@@ -187,6 +187,11 @@ export default function ScanScreen() {
     }
   };
 
+  // Function to navigate to real-time scan
+  const goToRealTimeScan = () => {
+    router.push('/real-time-scan');
+  };
+
   // Get color for a specific class
   const getColorForClass = (classId) => {
     const colors = {
@@ -269,6 +274,16 @@ export default function ScanScreen() {
         <Text style={styles.instructionText}>
           Take a photo or select an image of palm fruit to analyze its ripeness and quality
         </Text>
+
+        {/* Add Real-Time Scan Button */}
+        <TouchableOpacity 
+          style={[styles.realTimeButton, !modelReady && styles.disabledButton]} 
+          onPress={goToRealTimeScan}
+          disabled={!modelReady}
+        >
+          <Ionicons name="videocam" size={24} color="white" />
+          <Text style={styles.buttonText}>Real-Time Scan</Text>
+        </TouchableOpacity>
 
         <View style={styles.imageContainer}>
           {image ? (
@@ -605,6 +620,17 @@ const styles = StyleSheet.create({
   },
   disabledButton: {
     opacity: 0.7,
+  },
+  realTimeButton: {
+    flexDirection: 'row',
+    backgroundColor: '#3498db',
+    paddingHorizontal: 20,
+    paddingVertical: 15,
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    marginBottom: 20,
   },
   resultsContainer: {
     marginTop: 30,

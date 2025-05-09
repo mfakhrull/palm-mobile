@@ -1,7 +1,7 @@
 import * as FileSystem from 'expo-file-system';
 
 // Server configuration
-const API_SERVER = 'http://192.168.0.142:8000'; // Use this for local server
+const API_SERVER = 'http://172.20.10.3:8000'; // Use this for local server
 // const API_SERVER = 'http://10.0.2.2:8000'; // Use this for Android emulator
 // const API_SERVER = 'http://localhost:8000'; // Use this for iOS simulator
 
@@ -36,6 +36,9 @@ export default class PalmDetectionService {
       const mimeType = fileExtension === 'jpg' || fileExtension === 'jpeg' 
         ? 'image/jpeg' 
         : fileExtension === 'png' ? 'image/png' : 'application/octet-stream';
+      
+      // Log file info for debugging
+      console.log(`Image type: ${mimeType}, size: ${fileInfo.size} bytes`);
       
       formData.append('file', {
         uri: imageUri,
@@ -98,13 +101,22 @@ export default class PalmDetectionService {
    */
   static async detectWithBase64(base64Image) {
     try {
+      console.log('Sending base64 image to inference server...');
+      console.log(`Base64 image length: ${base64Image.length} characters`);
+      
+      // Remove any data URL prefix if present
+      let imageData = base64Image;
+      if (base64Image.startsWith('data:image')) {
+        imageData = base64Image.split(',')[1];
+      }
+      
       const response = await fetch(`${API_SERVER}/detect-base64`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
         },
-        body: JSON.stringify({ image: base64Image }),
+        body: JSON.stringify({ image: imageData }),
       });
       
       if (!response.ok) {
@@ -112,10 +124,56 @@ export default class PalmDetectionService {
         throw new Error(`API Error (${response.status}): ${errorData.message || 'Unknown error'}`);
       }
       
-      return await response.json();
+      const results = await response.json();
+      
+      // Add detailed logging for debugging
+      console.log('Base64 detection successful:', results.success);
+      console.log('Number of detections:', results.detections ? results.detections.length : 0);
+      
+      if (results.detections && results.detections.length > 0) {
+        console.log('Primary detection class:', results.detections[0].class);
+        console.log('Primary detection confidence:', results.detections[0].confidence);
+        console.log('Primary detection bounding box:', results.detections[0].boundingBox);
+      } else {
+        console.log('No detections found in the image');
+      }
+      
+      return results;
     } catch (error) {
       console.error('Error in base64 detection:', error);
       throw error;
+    }
+  }
+  
+  /**
+   * Try to detect using both methods (for reliability)
+   * @param {string} imageUri - URI of the image to process
+   * @param {string} base64Image - Base64 encoded image data (optional)
+   * @returns {Promise<Object>} The detection results
+   */
+  static async detectWithFallback(imageUri, base64Image = null) {
+    try {
+      // First try with URI for better quality
+      const results = await this.detectPalmFruit(imageUri);
+      return results;
+    } catch (error) {
+      console.log('URI detection failed, trying with base64');
+      
+      // Fallback to base64 if URI method fails
+      if (base64Image) {
+        return await this.detectWithBase64(base64Image);
+      } else {
+        // Convert URI to base64 if needed
+        try {
+          const base64 = await FileSystem.readAsStringAsync(imageUri, {
+            encoding: FileSystem.EncodingType.Base64,
+          });
+          return await this.detectWithBase64(base64);
+        } catch (e) {
+          console.error('Failed to convert URI to base64:', e);
+          throw error; // Throw original error if conversion fails
+        }
+      }
     }
   }
 }

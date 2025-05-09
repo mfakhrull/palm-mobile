@@ -35,12 +35,18 @@ export const detectPalmFruit = async (imageUri) => {
       }
     }
     
-    // Send the image to our Python inference service
-    const results = await PalmDetectionService.detectPalmFruit(imageUri);
-    
+    // Primary attempt
+    let results = await PalmDetectionService.detectPalmFruit(imageUri);
+
+    // Fallback to URI/base64 if no detections
+    if (results.detections.length === 0) {
+      console.log('No detections, using fallback method');
+      results = await PalmDetectionService.detectWithFallback(imageUri);
+    }
+
     // Check if we got a valid response
     if (!results.success) {
-      throw new Error(results.message || 'Detection failed on server');
+      throw new Error(results.message || 'Detection failed');
     }
     
     // Return results in the same format as before for compatibility
