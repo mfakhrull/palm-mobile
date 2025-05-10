@@ -105,16 +105,16 @@ export default function HomeScreen() {
             </Text>
           </TouchableOpacity>
 
-          <TouchableOpacity
+            <TouchableOpacity
             style={styles.card}
-            onPress={() => router.push("/guides")}
-          >
+            onPress={() => router.push("/education-resources")}
+            >
             <Ionicons name="leaf-outline" size={32} color="#e4a84c" />
-            <Text style={styles.cardTitle}>Farming Guides</Text>
+            <Text style={styles.cardTitle}>Education Resources</Text>
             <Text style={styles.cardDescription}>
-              Best practices for palm fruit cultivation and harvest
+              Learn best practices for cultivating, harvesting, and managing palm fruit
             </Text>
-          </TouchableOpacity>
+            </TouchableOpacity>
 
           <TouchableOpacity
             style={styles.card}
