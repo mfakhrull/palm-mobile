@@ -1,7 +1,7 @@
 import * as FileSystem from 'expo-file-system';
 
 // Server configuration
-const API_SERVER = 'http://172.20.10.3:8000'; // Use this for local server
+const API_SERVER = 'http://192.168.0.142:8000'; // Use this for local server
 // const API_SERVER = 'http://10.0.2.2:8000'; // Use this for Android emulator
 // const API_SERVER = 'http://localhost:8000'; // Use this for iOS simulator
 

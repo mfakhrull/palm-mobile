@@ -74,6 +74,28 @@ export default function HomeScreen() {
 
           <TouchableOpacity
             style={styles.card}
+            onPress={() => router.push("/palm-oil-price")}
+          >
+            <Ionicons name="trending-up-outline" size={32} color="#2e8b57" />
+            <Text style={styles.cardTitle}>Oil Palm Price</Text>
+            <Text style={styles.cardDescription}>
+              Check current prices and market trends for palm oil
+            </Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.card}
+            onPress={() => router.push("/farm-mapping")}
+          >
+            <Ionicons name="map-outline" size={32} color="#2e8b57" />
+            <Text style={styles.cardTitle}>Farm Mapping</Text>
+            <Text style={styles.cardDescription}>
+              Monitor and manage tree health across your plantation
+            </Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.card}
             onPress={() => router.push("/analytics")}
           >
             <Ionicons name="bar-chart-outline" size={32} color="#e4a84c" />

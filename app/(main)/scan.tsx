@@ -19,6 +19,7 @@ import { initPalmDetection, detectPalmFruit } from '../../utils/palmDetection';
 import { StatusBar } from 'expo-status-bar';
 import { LABELS } from '../../utils/tensorflow';
 import { generatePalmAnalysisPDF } from '../../utils/pdfService';
+import { LinearGradient } from 'expo-linear-gradient';
 
 export default function ScanScreen() {
   const router = useRouter();
@@ -274,14 +275,23 @@ export default function ScanScreen() {
 
   return (
     <ScrollView style={styles.container}>
-      <StatusBar style="auto" />
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-          <Ionicons name="arrow-back" size={24} color="#2e8b57" />
-        </TouchableOpacity>
-        <Text style={styles.title}>Scan Palm Fruit</Text>
-        <View style={styles.placeholder} />
-      </View>
+      <StatusBar style="light" />
+      
+      {/* Updated Header with Gradient - Matching Palm Oil Price page styling */}
+      <LinearGradient
+        colors={['#2e8b57', '#1a5733']}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 0 }}
+        style={styles.headerGradient}
+      >
+        <View style={styles.header}>
+          <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+            <Ionicons name="arrow-back" size={24} color="white" />
+          </TouchableOpacity>
+          <Text style={styles.title}>Scan Palm Fruit</Text>
+          <View style={styles.placeholder} />
+        </View>
+      </LinearGradient>
 
       <View style={styles.content}>
         {!modelReady && (
@@ -518,24 +528,20 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
   },
+  headerGradient: {
+    paddingTop: 60,
+    paddingBottom: 20,
+  },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: 20,
-    paddingTop: 60,
-    paddingBottom: 20,
-    backgroundColor: 'white',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 3,
-    elevation: 3,
   },
   title: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#2e8b57',
+    color: 'white',
   },
   backButton: {
     padding: 5,

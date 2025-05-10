@@ -22,7 +22,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 // API URL - Change this to your actual backend URL
 // Use your computer's actual IP address instead of localhost
-const API_URL = 'https://studyflow-backend.vercel.app/api'; // Deployed backend URL
+const API_URL = 'http://192.168.0.142:3000/api'; // Local backend URL
 
 // Auth Provider component
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
