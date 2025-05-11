@@ -63,11 +63,10 @@ export default function Login() {
             placeholder="Enter your password"
             secureTextEntry
             value={password}
-            onChangeText={setPassword}
-          />
+            onChangeText={setPassword}          />
         </View>
 
-        <TouchableOpacity>
+        <TouchableOpacity onPress={() => router.push("/(auth)/forgot-password")}>
           <Text style={styles.forgotPassword}>Forgot Password?</Text>
         </TouchableOpacity>
 
@@ -79,13 +78,12 @@ export default function Login() {
           {isLoading ? (
             <ActivityIndicator color="white" />
           ) : (
-            <Text style={styles.loginButtonText}>Login</Text>
-          )}
+            <Text style={styles.loginButtonText}>Login</Text>          )}
         </TouchableOpacity>
       </View>
 
       <View style={styles.footer}>
-        <Text style={styles.footerText}>Don't have an account? </Text>
+        <Text style={styles.footerText}>Don&apos;t have an account? </Text>
         <Link href="/(auth)/signup" asChild>
           <TouchableOpacity>
             <Text style={styles.signupLink}>Sign Up</Text>

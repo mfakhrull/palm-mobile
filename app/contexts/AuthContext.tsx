@@ -14,6 +14,9 @@ type AuthContextType = {
   login: (email: string, password: string) => Promise<{ success: boolean; message: string }>;
   register: (name: string, email: string, password: string) => Promise<{ success: boolean; message: string }>;
   logout: () => Promise<void>;
+  updateProfile: (name: string) => Promise<{ success: boolean; message: string }>;
+  changePassword: (currentPassword: string, newPassword: string) => Promise<{ success: boolean; message: string }>;
+  deleteAccount: () => Promise<{ success: boolean; message: string }>;
   fetchWithAuth: (url: string, options?: RequestInit) => Promise<Response>;
 };
 
@@ -46,7 +49,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setIsLoading(false);
     }
   };
-
   // Helper function to make authenticated requests
   const fetchWithAuth = async (url: string, options: RequestInit = {}) => {
     const headers = {
@@ -115,7 +117,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       return { success: false, message: 'Network error, please try again' };
     }
   };
-
   const logout = async () => {
     try {
       await AsyncStorage.removeItem('user');
@@ -123,6 +124,88 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setUser(null);
     } catch (error) {
       console.error('Logout error:', error);
+    }
+  };
+
+  const updateProfile = async (name: string) => {
+    try {
+      if (!user) {
+        return { success: false, message: 'You must be logged in' };
+      }
+
+      const response = await fetchWithAuth('/user/profile', {
+        method: 'PUT',
+        body: JSON.stringify({ name, email: user.email }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        return { success: false, message: data.message || 'Profile update failed' };
+      }
+
+      // Update the user in state and storage
+      const updatedUser = { ...user, name };
+      setUser(updatedUser);
+      await AsyncStorage.setItem('user', JSON.stringify(updatedUser));
+
+      return { success: true, message: 'Profile updated successfully' };
+    } catch (error) {
+      console.error('Profile update error:', error);
+      return { success: false, message: 'Network error, please try again' };
+    }
+  };
+
+  const changePassword = async (currentPassword: string, newPassword: string) => {
+    try {
+      if (!user) {
+        return { success: false, message: 'You must be logged in' };
+      }
+
+      const response = await fetchWithAuth('/user/change-password', {
+        method: 'PUT',
+        body: JSON.stringify({
+          email: user.email,
+          currentPassword,
+          newPassword,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        return { success: false, message: data.message || 'Password change failed' };
+      }
+
+      return { success: true, message: 'Password changed successfully' };
+    } catch (error) {
+      console.error('Password change error:', error);
+      return { success: false, message: 'Network error, please try again' };
+    }
+  };
+
+  const deleteAccount = async () => {
+    try {
+      if (!user) {
+        return { success: false, message: 'You must be logged in' };
+      }
+
+      const response = await fetchWithAuth('/user/delete-account', {
+        method: 'DELETE',
+        body: JSON.stringify({ email: user.email }),
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        return { success: false, message: data.message || 'Account deletion failed' };
+      }
+
+      // Clear user data and log out
+      await logout();
+      return { success: true, message: 'Account deleted successfully' };
+    } catch (error) {
+      console.error('Account deletion error:', error);
+      return { success: false, message: 'Network error, please try again' };
     }
   };
 
@@ -134,6 +217,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         login,
         register,
         logout,
+        updateProfile,
+        changePassword,
+        deleteAccount,
         fetchWithAuth
       }}
     >
