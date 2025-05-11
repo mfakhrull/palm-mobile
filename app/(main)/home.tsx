@@ -61,7 +61,7 @@ export default function HomeScreen() {
             </Text>
           </TouchableOpacity>
 
-          <TouchableOpacity
+          {/* <TouchableOpacity
             style={styles.card}
             onPress={() => router.push("/history")}
           >
@@ -70,7 +70,7 @@ export default function HomeScreen() {
             <Text style={styles.cardDescription}>
               View your previous palm fruit scan results
             </Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
 
           <TouchableOpacity
             style={styles.card}
@@ -94,7 +94,7 @@ export default function HomeScreen() {
             </Text>
           </TouchableOpacity>
 
-          <TouchableOpacity
+          {/* <TouchableOpacity
             style={styles.card}
             onPress={() => router.push("/analytics")}
           >
@@ -103,7 +103,7 @@ export default function HomeScreen() {
             <Text style={styles.cardDescription}>
               Track fruit quality trends and harvest insights
             </Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
 
             <TouchableOpacity
             style={styles.card}
@@ -116,7 +116,7 @@ export default function HomeScreen() {
             </Text>
             </TouchableOpacity>
 
-          <TouchableOpacity
+          {/* <TouchableOpacity
             style={styles.card}
             onPress={() => router.push("/marketplace")}
           >
@@ -125,7 +125,7 @@ export default function HomeScreen() {
             <Text style={styles.cardDescription}>
               Connect with buyers and get fair prices for your harvest
             </Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
 
           <TouchableOpacity
             style={styles.card}

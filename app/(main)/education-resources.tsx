@@ -308,6 +308,7 @@ export default function EducationResourcesScreen() {
       >
         {showNewPostForm && (
           <View style={styles.newPostForm}>
+            <Text style={styles.inputLabel}>Post Content</Text>
             <TextInput
               style={styles.textInput}
               placeholder="Share your knowledge..."
@@ -316,6 +317,7 @@ export default function EducationResourcesScreen() {
               multiline
             />
 
+            <Text style={styles.inputLabel}>YouTube URL (optional)</Text>
             <TextInput
               style={styles.textInput}
               placeholder="YouTube URL (optional)"
@@ -323,6 +325,7 @@ export default function EducationResourcesScreen() {
               onChangeText={setNewPostYoutubeUrl}
             />
 
+            <Text style={styles.inputLabel}>Add Image (optional)</Text>
             <View style={styles.newPostActions}>
               <TouchableOpacity
                 style={styles.imageButton}
@@ -366,7 +369,7 @@ export default function EducationResourcesScreen() {
                   onPress={handleCreatePost}
                   disabled={!newPostContent.trim()}
                 >
-                  <Text style={styles.buttonText}>Post</Text>
+                  <Text style={styles.postButtonText}>Post</Text>
                 </TouchableOpacity>
               </View>
             </View>
@@ -535,6 +538,11 @@ const styles = StyleSheet.create({
     shadowRadius: 2,
     elevation: 2,
   },
+  inputLabel: {
+    fontSize: 14,
+    color: "#333",
+    marginBottom: 4,
+  },
   textInput: {
     borderWidth: 1,
     borderColor: "#ddd",
@@ -587,6 +595,11 @@ const styles = StyleSheet.create({
   },
   postButton: {
     backgroundColor: "#2e8b57",
+  },
+  postButtonText: { // New style for the Post button text
+    fontSize: 16,
+    color: "#fff",
+    fontWeight: "bold", // Optional: for better emphasis
   },
   cancelButton: {
     backgroundColor: "transparent",

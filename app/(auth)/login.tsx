@@ -8,7 +8,6 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const { login } = useAuth();
-
   const handleLogin = async () => {
     // Validate inputs
     if (!email || !password) {
@@ -23,7 +22,16 @@ export default function Login() {
       if (result.success) {
         router.replace("/(main)/home");
       } else {
-        Alert.alert("Login Failed", result.message);
+        // Special handling for suspended accounts
+        if (result.message && result.message.includes('suspended')) {
+          Alert.alert(
+            "Account Suspended", 
+            "Your account has been suspended. Please contact support for assistance.",
+            [{ text: "OK" }]
+          );
+        } else {
+          Alert.alert("Login Failed", result.message);
+        }
       }
     } catch (error) {
       Alert.alert("Error", "An unexpected error occurred. Please try again.");

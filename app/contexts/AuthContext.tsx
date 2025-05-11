@@ -6,6 +6,8 @@ type User = {
   id: string;
   name: string;
   email: string;
+  isAdmin?: boolean;
+  status?: string;
 };
 
 type AuthContextType = {
@@ -145,7 +147,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
 
       // Update the user in state and storage
-      const updatedUser = { ...user, name };
+      // Make sure to preserve the status and other fields
+      const updatedUser = { 
+        ...user, 
+        name,
+        status: data.user?.status || user.status // Ensure status is updated if returned from API
+      };
       setUser(updatedUser);
       await AsyncStorage.setItem('user', JSON.stringify(updatedUser));
 

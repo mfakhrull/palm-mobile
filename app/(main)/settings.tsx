@@ -21,6 +21,7 @@ export default function SettingsScreen() {
   // Profile state
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
+  const [status, setStatus] = useState('');
   const [isEditingProfile, setIsEditingProfile] = useState(false);
   const [isSavingProfile, setIsSavingProfile] = useState(false);
   
@@ -36,6 +37,7 @@ export default function SettingsScreen() {
     if (user) {
       setName(user.name);
       setEmail(user.email);
+      setStatus(user.status || 'active'); // Default to 'active' if status is undefined
     }
   }, [user]);
   // Handle profile update
@@ -230,6 +232,28 @@ export default function SettingsScreen() {
                 <Text style={styles.infoValue}>{email}</Text>
               </View>
               
+              <View style={styles.profileInfoRow}>
+                <Text style={styles.infoLabel}>Account Status:</Text>
+                <View style={styles.statusContainer}>
+                  <View 
+                    style={[
+                      styles.statusIndicator, 
+                      status === 'active' ? styles.statusActive : styles.statusSuspended
+                    ]}
+                  />
+                  <Text style={[styles.infoValue, styles.statusText]}>
+                    {status === 'active' ? 'Active' : 'Suspended'}
+                  </Text>
+                </View>
+              </View>
+              
+              {user?.isAdmin && (
+                <View style={styles.profileInfoRow}>
+                  <Text style={styles.infoLabel}>Admin:</Text>
+                  <Text style={[styles.infoValue, styles.adminBadge]}>Yes</Text>
+                </View>
+              )}
+              
               <TouchableOpacity
                 style={styles.button}
                 onPress={() => setIsEditingProfile(true)}
@@ -305,12 +329,12 @@ export default function SettingsScreen() {
                 </TouchableOpacity>
               </View>
               
-              <TouchableOpacity
+              {/* <TouchableOpacity
                 style={styles.forgotPasswordLink}
                 onPress={() => router.push("/(auth)/forgot-password" as any)}
               >
                 <Text style={styles.forgotPasswordText}>Forgot your password?</Text>
-              </TouchableOpacity>
+              </TouchableOpacity> */}
             </View>
           ) : (
             <View>
@@ -321,12 +345,12 @@ export default function SettingsScreen() {
                 <Text style={styles.buttonText}>Change Password</Text>
               </TouchableOpacity>
               
-              <TouchableOpacity
+              {/* <TouchableOpacity
                 style={styles.forgotPasswordLink}
                 onPress={() => router.push("/(auth)/forgot-password" as any)}
               >
                 <Text style={styles.forgotPasswordText}>Forgot your password?</Text>
-              </TouchableOpacity>
+              </TouchableOpacity> */}
             </View>
           )}
         </View>
@@ -476,5 +500,29 @@ const styles = StyleSheet.create({
   forgotPasswordText: {
     color: '#2e8b57',
     fontSize: 14,
+  },
+  statusContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1, // allow text to render
+  },
+  statusIndicator: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    marginRight: 8,
+  },
+  statusText: {
+    marginLeft: 4, // small gap after the dot
+  },
+  statusActive: {
+    backgroundColor: '#2e8b57',
+  },
+  statusSuspended: {
+    backgroundColor: '#e74c3c',
+  },
+  adminBadge: {
+    fontWeight: 'bold',
+    color: '#2e8b57',
   },
 });
