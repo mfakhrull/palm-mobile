@@ -13,28 +13,50 @@ import {
   KeyboardAvoidingView,
   TouchableWithoutFeedback,
   Keyboard,
+  Dimensions,
 } from "react-native";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
+import { LinearGradient } from 'expo-linear-gradient';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 // Mock SVG components until react-native-svg is properly installed
 const Svg = ({ children, width, height, ...props }) => (
   <View style={{ width, height, ...props }}>{children}</View>
 );
 
-const Circle = ({ cx, cy, r, fill, onPress }) => (
+// Custom TreeIcon component to replace Circle
+const TreeIcon = ({ cx, cy, size, status, onPress, treeId }) => (
   <TouchableOpacity
     onPress={onPress}
     style={{
       position: 'absolute',
-      width: r * 2,
-      height: r * 2,
-      borderRadius: r,
-      backgroundColor: fill,
-      left: cx - r,
-      top: cy - r,
+      left: cx - size/2,
+      top: cy - size/2,
+      width: size,
+      height: size,
+      alignItems: 'center',
+      justifyContent: 'center',
     }}
-  />
+  >
+    <Text style={{ fontSize: size * 0.9 }}>🌴</Text>
+    <View style={{
+      position: 'absolute',
+      bottom: -10,
+      backgroundColor: status === 'healthy' ? 'rgba(40, 167, 69, 0.8)' : 'rgba(220, 53, 69, 0.8)',
+      paddingHorizontal: 4,
+      paddingVertical: 2,
+      borderRadius: 10,
+    }}>
+      <Text style={{ 
+        color: 'white', 
+        fontSize: 10, 
+        fontWeight: 'bold' 
+      }}>
+        {treeId}
+      </Text>
+    </View>
+  </TouchableOpacity>
 );
 
 const Line = ({ x1, y1, x2, y2, stroke, strokeWidth }) => (
@@ -471,12 +493,28 @@ export default function FarmMappingScreen() {
 
       <View style={styles.legendContainer}>
         <View style={styles.legendItem}>
-          <View style={[styles.legendDot, { backgroundColor: '#28a745' }]} />
-          <Text style={styles.legendText}>Healthy Trees</Text>
+          <Text style={{ fontSize: 18 }}>🌴</Text>
+          <View style={{
+            backgroundColor: 'rgba(40, 167, 69, 0.8)',
+            paddingHorizontal: 4,
+            paddingVertical: 1,
+            borderRadius: 4,
+            marginLeft: 4,
+          }}>
+            <Text style={[styles.legendText, { color: 'white', marginLeft: 0 }]}>Healthy</Text>
+          </View>
         </View>
         <View style={styles.legendItem}>
-          <View style={[styles.legendDot, { backgroundColor: '#dc3545' }]} />
-          <Text style={styles.legendText}>Sick Trees</Text>
+          <Text style={{ fontSize: 18 }}>🌴</Text>
+          <View style={{
+            backgroundColor: 'rgba(220, 53, 69, 0.8)',
+            paddingHorizontal: 4,
+            paddingVertical: 1,
+            borderRadius: 4,
+            marginLeft: 4,
+          }}>
+            <Text style={[styles.legendText, { color: 'white', marginLeft: 0 }]}>Sick</Text>
+          </View>
         </View>
       </View>
 
@@ -485,6 +523,10 @@ export default function FarmMappingScreen() {
         ref={graphRef}
         onTouchEnd={handleGraphPress}
       >
+        <LinearGradient
+          colors={['#e8f5e9', '#c8e6c9', '#a5d6a7']}
+          style={StyleSheet.absoluteFillObject}
+        />
         <Svg height="100%" width="100%">
           {Array.from({ length: 11 }).map((_, i) => (
             <Line
@@ -493,7 +535,7 @@ export default function FarmMappingScreen() {
               y1={i * 40}
               x2="100%"
               y2={i * 40}
-              stroke="#eee"
+              stroke="rgba(100, 150, 100, 0.3)"
               strokeWidth="1"
             />
           ))}
@@ -504,30 +546,20 @@ export default function FarmMappingScreen() {
               y1="0"
               x2={i * 40}
               y2="100%"
-              stroke="#eee"
+              stroke="rgba(100, 150, 100, 0.3)"
               strokeWidth="1"
             />
           ))}
           {trees.map((tree) => (
-            <React.Fragment key={tree._id || tree.id}>
-              <Circle
-                cx={tree.x}
-                cy={tree.y}
-                r={15}
-                fill={tree.status === 'healthy' ? '#28a745' : '#dc3545'}
-                onPress={() => handleTreePress(tree)}
-              />
-              <SvgText
-                x={tree.x}
-                y={tree.y + 5}
-                textAnchor="middle"
-                fill="white"
-                fontSize="12"
-                fontWeight="bold"
-              >
-                {tree._id ? tree._id.toString().slice(-3) : tree.id}
-              </SvgText>
-            </React.Fragment>
+            <TreeIcon
+              key={tree._id || tree.id}
+              cx={tree.x}
+              cy={tree.y}
+              size={30}
+              status={tree.status}
+              treeId={tree._id ? tree._id.toString().slice(-3) : tree.id}
+              onPress={() => handleTreePress(tree)}
+            />
           ))}
         </Svg>
       </View>
@@ -686,7 +718,7 @@ export default function FarmMappingScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f7f9fc",
+    backgroundColor: "#f0f8ff",
   },
   header: {
     flexDirection: "row",
@@ -695,7 +727,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingTop: Platform.OS === 'ios' ? 60 : 40,
     paddingBottom: 20,
-    backgroundColor: "white",
+    backgroundColor: "#f8fafc",
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
@@ -757,11 +789,11 @@ const styles = StyleSheet.create({
   legendText: {
     fontSize: 14,
     color: '#666',
+    marginLeft: 6,
   },
   graphContainer: {
     flex: 1,
-    backgroundColor: 'white',
-    margin: 10,
+    margin: 2,
     borderRadius: 10,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 1 },
